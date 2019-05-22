@@ -63,6 +63,9 @@ spec:
         - name: KONG_CASSANDRA_CONTACT_POINTS
           value: {{ template "kong.cassandra.fullname" . }}
         {{- end }}
-        command: [ "/bin/sh", "-c", "kong migrations bootstrap" ]
+        # Handling the case where we are re-installing over the top of an existing DB
+        # For the initial install, bootstrap will do its thing
+        # In the case of a re-install, bootstrap does a no-op and up will migrate
+        command: [ "/bin/sh", "-c", "kong migrations bootstrap && kong migrations up" ]
       restartPolicy: OnFailure
 {{- end }}
